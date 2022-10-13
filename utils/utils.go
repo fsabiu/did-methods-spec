@@ -19,10 +19,9 @@ func main() {
 	for i := 0; i <= windowNum-1; i++ {
 
 		currentChunk = TxID[startIdx:endIdx]
-		fmt.Println(currentChunk)
 		startIdx = startIdx + windowLen
 		endIdx = endIdx + windowLen
-
+		fmt.Println("The current chunk is", currentChunk, "and the resulting Index is ", indexGenerator(currentChunk))
 	}
 }
 
