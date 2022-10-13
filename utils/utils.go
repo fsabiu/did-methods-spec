@@ -33,5 +33,6 @@ func indexGenerator(s string) int {
 	io.WriteString(h, TxID)
 	var seed uint64 = binary.BigEndian.Uint64(h.Sum(nil))
 	rand.Seed(int64(seed))
-	index = rand.Intn(32)
+	index := rand.Intn(32)
+	return index
 }
