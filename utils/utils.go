@@ -11,30 +11,19 @@ import (
 func main() {
 
 	TxID := "bc5221c648533646877505288fc50b6c6100394213694bf111f7a3183074a329"
-	windowLen := 4
-	windowNum := len(TxID) / windowLen
-	startIdx := 0
-	endIdx := windowLen
-	currentChunk := ""
-	for i := 0; i <= windowNum-1; i++ {
 
-		currentChunk = TxID[startIdx:endIdx]
-		fmt.Println(currentChunk)
-		startIdx = startIdx + windowLen
-		endIdx = endIdx + windowLen
-		fmt.Println("Index is : ", indexGenerator(currentChunk))
-	}
+	idString := GenerateIdString(TxID, 4)
+	fmt.Println("Idstring : ", idString)
 
 }
 
 func indexGenerator(s string) int {
 
 	h := md5.New()
-	TxID := "bc5221c648533646877505288fc50b6c6100394213694bf111f7a3183074a329"
-	io.WriteString(h, TxID)
+	io.WriteString(h, s)
 	var seed uint64 = binary.BigEndian.Uint64(h.Sum(nil))
 	rand.Seed(int64(seed))
-	index = rand.Intn(32)
+	index := rand.Intn(32)
 	return index
 }
 
@@ -45,22 +34,23 @@ func EncodeStringBase32(s string) string {
 	return base32Encoded
 }
 
-func GenerateIdString(TxID string, uint8 windowLen) string {
+func GenerateIdString(TxID string, windowLen int) string {
 
+	idString := ""
 	windowNum := len(TxID) / windowLen
 	startIdx := 0
 	endIdx := windowLen
 	currentChunk := ""
-	var primes []int
 
 	for i := 0; i <= windowNum-1; i++ {
 
 		currentChunk = TxID[startIdx:endIdx]
-		fmt.Println(currentChunk)
+		//fmt.Println(currentChunk)
 		startIdx = startIdx + windowLen
 		endIdx = endIdx + windowLen
+		base32Encoded := EncodeStringBase32(currentChunk)
+		idString = idString + base32Encoded
 
-		fmt.Println("Index is : ", indexGenerator(currentChunk))
 	}
-
+	return idString
 }
