@@ -6,7 +6,6 @@ import (
 	"github.com/fsabiu/did-methods-spec/tools"
 )
 
-const encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 const windowLen = 4
 
 func main() {
