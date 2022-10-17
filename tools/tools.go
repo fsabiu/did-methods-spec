@@ -3,6 +3,7 @@ package tools
 import (
 	"crypto/md5"
 	"encoding/binary"
+	"fmt"
 	"io"
 	"math"
 	"math/rand"
@@ -10,11 +11,14 @@ import (
 
 const encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
-const windowLen = 4 // used by idstring generator
+const windowLen = 8 // used by idstring generator
 
 // Used by Method 2
 //const wordLength = 32 // Depends on the machine
 const M = 5 // 5 bits to represent 32 chars
+
+// Used for tests
+const TxIDAlphabet = "abcdefghijklmnopqrstuvwxyz01233456789"
 
 //this function returns the int64-converted checksum of a string s
 func ComputeChecksum(s string) int64 {
@@ -62,21 +66,17 @@ func GenerateIdString(TxID string, method int) string {
 			idString = idString + idChar //append new base32 char to idString
 		}
 	case 2:
-		s := 0
-		e := windowLen
+		s := 0         // start index
+		e := windowLen // end index
 
 		for e <= len(TxID) {
 			chunk := TxID[s:e]
-			//fmt.Println("Chunk: ", chunk)
 
 			asciiVect := String2Ascii(chunk)
-			//fmt.Println("ASCII: ", asciiVect)
-
 			oddVect := OddArrayGenerator(chunk, 100)
-			//fmt.Println("Odd vect: ", oddVect)
 
+			// Getting hash value for current chunk
 			h := HashingVectors(asciiVect, oddVect)
-			//fmt.Println("Hash: ", h)
 
 			// Appending char to idstring
 			idString = idString + encodeStd[h:h+1]
@@ -95,17 +95,7 @@ func HashingVectors(x []int, y []int) int {
 
 	// Dot product
 	dp := DotProduct(x, y)
-	//fmt.Println("Dot product: ", dp)
-
-	// Hasing vectors formula: https://en.wikipedia.org/wiki/Universal_hashing#Hashing_vectors
-	//h := int(dp%int(math.Pow(2, 2*wordLength))) / int(math.Pow(2, (2*wordLength)-M))
-	//fmt.Println("par: ", int(dp%int(math.Pow(2, 2*wordLength))))
-	//fmt.Println("div: ", int(math.Pow(2, (2*wordLength)-M)))
-	//fmt.Println("h1: ", h)
-
-	//h = h % int(math.Pow(2, M))
-	//fmt.Println("h2: ", h)
-
+	// Hash -> [0,32)
 	h := dp % int(math.Pow(2, M))
 	return h
 }
@@ -153,4 +143,70 @@ func DotProduct(x []int, y []int) int {
 	}
 
 	return dp
+}
+
+// n = number of Transaction IDs
+func TestIdStringGenerators(n int) {
+
+	var TxIDs []string // Slice of TxIDs
+
+	// Generating n TxIDs
+	for i := 0; i < n; i++ {
+		TxIDs = append(TxIDs, generateString(TxIDAlphabet, 64))
+	}
+
+	// Mapping idstrings -> counter
+	idstrings1 := make(map[string]int)
+	idstrings2 := make(map[string]int)
+
+	// Collision counters
+	collisions1 := 0
+	collisions2 := 0
+
+	// Counting collisions
+	idstring := ""
+	for i := 0; i < n; i++ {
+		// Method 1
+		idstring = GenerateIdString(TxIDs[i], 1)
+		// Checking
+		if i%1000 == 0 {
+			fmt.Println("TxID #", i, ": ", TxIDs[i])
+			fmt.Println("Method 1 idstring #", i, ": ", idstring)
+		}
+
+		if idstrings1[idstring] == 0 { // no collision
+			idstrings1[idstring] = 1
+		} else {
+			idstrings1[idstring] += 1 // Collision
+			collisions1 += 1          // Updating counter
+		}
+
+		// Method 2
+		idstring = GenerateIdString(TxIDs[i], 2)
+		if i%1000 == 0 {
+			fmt.Println("Method 2 idstring #", i, ": ", idstring)
+		}
+
+		if idstrings2[idstring] == 0 { // no collision
+			idstrings2[idstring] = 1
+		} else {
+			idstrings2[idstring] += 1 // Collision
+			collisions2 += 1          // Updating counter
+		}
+	}
+
+	fmt.Println("Collisions 1: ", collisions1)
+	fmt.Println("Collisions 2: ", collisions2)
+}
+
+func generateString(alphabet string, length int) string {
+	txID := ""
+	alphabetLen := len(alphabet)
+
+	for i := 0; i < length; i++ {
+		index := rand.Intn(alphabetLen)       // generating random char
+		txID = txID + alphabet[index:index+1] // appending char
+	}
+
+	return txID
 }
