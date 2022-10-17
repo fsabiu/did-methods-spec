@@ -9,14 +9,19 @@ import (
 
 const encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
+//this function returns the int64-converted checksum of a string s
+func computeChecksum(s string) int64 {
+	h := md5.New()                                  //init new new hash.Hash object computing the MD5 checksum
+	io.WriteString(h, s)                            //write string into object
+	checksum := binary.BigEndian.Uint64(h.Sum(nil)) //compute checksum and convert into uint64
+	return int64(checksum)
+}
+
 //IndexGenerator takes as input a string generates an integer in the interval [0,31]
 //The string is hashed into an integer and used as seed of the random generation
 func IndexGenerator(s string) int {
-
-	h := md5.New()                              //init new new hash.Hash object computing the MD5 checksum
-	io.WriteString(h, s)                        //write string into object
-	seed := binary.BigEndian.Uint64(h.Sum(nil)) //compute checksum and
-	rand.Seed(int64(seed))                      //set seed
+	seed := computeChecksum(s) //compute checksum and assign to seed
+	rand.Seed(seed)            //set seed
 	index := rand.Intn(32)
 	return index
 }
