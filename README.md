@@ -116,6 +116,7 @@ These steps are iterated over the 16 blocks to obtain the 16 characters of the i
 Pseudo-code:
 ```
 Input: TxID // len(TxID)= 64
+
 blocks:= split(TxID, 4) // Split TxID in 16 blocks of size 4
 idstring:= ""
 for block in blocks:
