@@ -22,11 +22,9 @@ const TxIDAlphabet = "abcdefghijklmnopqrstuvwxyz01233456789"
 
 //this function returns the int64-converted checksum of a string s
 func ComputeChecksum(s string) int64 {
-	h := md5.New()       //init new new hash.Hash object computing the MD5 checksum
-	io.WriteString(h, s) //write string into object
-	//fmt.Println("h sum: ", h.Sum(nil))
+	h := md5.New()                                  //init new new hash.Hash object computing the MD5 checksum
+	io.WriteString(h, s)                            //write string into object
 	checksum := binary.BigEndian.Uint64(h.Sum(nil)) //compute checksum and convert into uint64
-	//fmt.Println("Checksum: ", checksum)
 	return int64(checksum)
 }
 
@@ -49,41 +47,33 @@ func EncodeStringBase32(s string) string {
 func GenerateIdString(TxID string, method int) string {
 
 	idString := ""
+	currentChunk := ""
+	startIdx := 0
+	endIdx := windowLen
 
 	switch method {
 	case 1:
-		windowNum := len(TxID) / windowLen
-		startIdx := 0
-		endIdx := windowLen
-		currentChunk := ""
-
-		for i := 0; i <= windowNum-1; i++ {
-
-			currentChunk = TxID[startIdx:endIdx] //get current 4 chars chunk of TxId
-			startIdx = startIdx + windowLen
-			endIdx = endIdx + windowLen
-			idChar := EncodeStringBase32(currentChunk)
-			idString = idString + idChar //append new base32 char to idString
-		}
-	case 2:
-		s := 0         // start index
-		e := windowLen // end index
-
-		for e <= len(TxID) {
-			chunk := TxID[s:e]
-
-			asciiVect := String2Ascii(chunk)
-			oddVect := OddArrayGenerator(chunk, 100)
-
-			// Getting hash value for current chunk
-			h := HashingVectors(asciiVect, oddVect)
-
-			// Appending char to idstring
-			idString = idString + encodeStd[h:h+1]
+		for endIdx <= len(TxID) {
+			currentChunk = TxID[startIdx:endIdx]       // Get current 4 chars chunk of TxId
+			idChar := EncodeStringBase32(currentChunk) // Use checksum as a seed for index generation, then convert to char
+			idString = idString + idChar               // Append new base32 char to idString
 
 			// Step to next chunk
-			s += windowLen
-			e += windowLen
+			startIdx += windowLen
+			endIdx += windowLen
+		}
+	case 2:
+		for endIdx <= len(TxID) {
+			currentChunk = TxID[startIdx:endIdx]
+			asciiVect := String2Ascii(currentChunk)
+			oddVect := OddArrayGenerator(currentChunk, 100)
+
+			h := HashingVectors(asciiVect, oddVect) // Getting hash value for current chunk [0, 32)
+			idString = idString + encodeStd[h:h+1]  // Appending char to idstring
+
+			// Step to next chunk
+			startIdx += windowLen
+			endIdx += windowLen
 		}
 	}
 
@@ -92,7 +82,6 @@ func GenerateIdString(TxID string, method int) string {
 
 // Hash functions returning value in range [0, 2^M -1] = [0, 31]
 func HashingVectors(x []int, y []int) int {
-
 	// Dot product
 	dp := DotProduct(x, y)
 	// Hash -> [0,32)
@@ -104,13 +93,13 @@ func HashingVectors(x []int, y []int) int {
 // The (odd) integers of the generated array "a" are included in [1,randRange].
 func OddArrayGenerator(chunk string, randRange int) []int {
 
-	seed := ComputeChecksum(chunk) //compute checksum of the block
-	rand.Seed(seed)
+	seed := ComputeChecksum(chunk) // Compute checksum of the block
+	rand.Seed(seed)                // Setting seed
 
-	permutation := rand.Perm(randRange)
-	a := permutation[0:len(chunk)]
+	permutation := rand.Perm(randRange) // Generating permutation of array [0, randRange)
+	a := permutation[0:len(chunk)]      // Fetching first len(chunk) elements
 
-	// Getting only odd numbers
+	// Getting only odd numbers (if even then sum 1)
 	for i := 0; i < len(chunk); i++ {
 		if a[i]%2 == 0 {
 			a[i]++
@@ -133,7 +122,6 @@ func String2Ascii(chunk string) []int {
 
 // Retuns the dot products of two integer vectors
 func DotProduct(x []int, y []int) int {
-
 	dp := -1
 	if len(x) == len(y) {
 		dp = 0

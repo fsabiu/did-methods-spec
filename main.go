@@ -19,6 +19,6 @@ func main() {
 
 	// Testing collisions, n = 100000, m = 32^16
 	// EV <= n(n-1)/2m =
-	tools.TestIdStringGenerators(1000000)
+	tools.TestIdStringGenerators(10000000)
 
 }
