@@ -56,11 +56,15 @@ func main() {
 	didDocument["did:orcl:QC5S8KGCFN37Z5VP"] = datamodel
 
 	// Print did document JSON
-	a1_json, err := json.Marshal(didDocument)
+	printJson(didDocument)
+
+}
+
+func printJson(doc any) {
+	a1_json, err := json.Marshal(doc)
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
 		fmt.Println(string(a1_json))
 	}
-
 }
