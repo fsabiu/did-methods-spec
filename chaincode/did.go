@@ -45,10 +45,6 @@ func main() {
 		Property: property,
 	}
 
-	// Data model
-	did := make(map[string]DataModel)
-	did["did:orcl:QC5S8KGCFN37Z5VP"] = datamodel
-
 	// Did document
 	didDocument := make(map[string]interface{})
 	didDocument["didMethod"] = "did:orcl"
