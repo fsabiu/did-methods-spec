@@ -95,21 +95,21 @@ func main() {
 		Property Properties `json:"didDocumentDataModel"`
 	}
 
-	type DidDocument struct {
+	/* type DidDocument struct {
 		DidMethod            string
 		Implementation       string
 		Implementer          string
 		SupportedContentType []string
 		Dids                 []string
 		Did                  map[string]DataModel
-	}
+	} */
 
 	property := Properties{
 		Context: []string{
 			"https://www.w3.org/ns/did/v1",
 			"https://w3id.org/security/suites/ed25519-2020/v1"},
 		Id: s,
-		Method: []VerMethod{VerMethod{
+		Method: []VerMethod{{
 			Id:          s + "#key-1",
 			Typ:         "Ed25519VerificationKey2020",
 			Controller:  s,
@@ -123,17 +123,28 @@ func main() {
 	did := make(map[string]DataModel)
 	did["did:orcl:QC5S8KGCFN37Z5VP"] = datamodel
 
-	doc := DidDocument{
-		DidMethod:      "did:orcl",
+	// Did document
+	didDocument := make(map[string]interface{})
+	didDocument["didMethod"] = "did:orcl"
+	didDocument["implementation"] = "DID Oracle Test Suite"
+	didDocument["implementater"] = "Oracle"
+	didDocument["supportedContentTypes"] = []string{"application/did+json",
+		"application/did+ld+json"}
+	didDocument["dids"] = []string{"did:orcl:QC5S8KGCFN37Z5VP"}
+	didDocument["did:orcl:QC5S8KGCFN37Z5VP"] = datamodel
+
+	// doc
+	/* doc := DidDocument{
+		DidMethod:      ,
 		Implementation: "DID Oracle Test Suite",
 		Implementer:    "Oracle",
 		SupportedContentType: []string{"application/did+json",
 			"application/did+ld+json"},
 		Dids: []string{"did:orcl:QC5S8KGCFN37Z5VP"},
 		Did:  did,
-	}
+	} */
 
-	a1_json, err := json.Marshal(doc)
+	a1_json, err := json.Marshal(didDocument)
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
