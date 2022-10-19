@@ -85,7 +85,9 @@ To achieve determinism, both of them make use of the Transaction ID (TxID), whil
 <br /><br />
 Both methods assume that:
 - Transaction IDs are unique strings of length 64 with characters in [a-z0-9];
-- ...
+- Each character of the Transaction ID alphabet is uniquely identified by an index;
+- Each character of the base32 alphabet is uniquely identified by an index;
+
 
 ****Method 1**** 
 <br />
