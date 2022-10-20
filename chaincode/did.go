@@ -21,7 +21,7 @@ type Properties struct {
 }
 
 type DataModel struct {
-	Property Properties `json:"didDocumentDataModel"`
+	Property *Properties `json:"didDocumentDataModel"`
 }
 
 type DidDoc map[string]interface{}
@@ -44,7 +44,7 @@ func main() {
 		Auth: []string{s}}
 
 	datamodel := DataModel{
-		Property: property,
+		Property: &property,
 	}
 
 	// Did document
@@ -59,7 +59,7 @@ func main() {
 	didDocument["did:orcl:QC5S8KGCFN37Z5VP"] = datamodel
 
 	// Print did document JSON
-	printJson(didDocument)
+	//printJson(didDocument)
 
 	/////////////
 	verMeth := createVerMethod(s+"#key-1", "Ed25519VerificationKey2020", s, "cTx0CiPUqsTLr2xy53VAQUVfOn7dvFqHeeC1k")
@@ -77,25 +77,52 @@ func main() {
 		"application/did+ld+json"}, didMap)
 	//printJson(verMeth)
 	//printJson(prop)
-	printJson(didDoc)
+	//printJson(didDoc)
 
 	dataModel2Add := make(map[string]DataModel)
 	dataModel2Add["did:orcl:XXXXXXXXXXX"] = dm
 
 	didDoc.addDataModel(dataModel2Add)
 
+	//printJson(didDoc)
+
+	testMap := make(map[string][]VerMethod)
+	testMap["did:orcl:XXXXXXXXXXX"] = prop.Method
+	didDoc.addAuthMethod(testMap)
 	printJson(didDoc)
 
 }
 
 func (didDocument DidDoc) addDataModel(datamodels map[string]DataModel) {
+	//var keys []string
+
+	keys := didDocument["dids"].([]string)
 
 	for key, value := range datamodels {
 		didDocument[key] = value
+		keys = append(keys, key)
 	}
-
+	didDocument["dids"] = keys
 }
 
+func (didDocument DidDoc) addAuthMethod(methods map[string][]VerMethod) {
+
+	for key, value := range methods {
+		p := append(didDocument[key].(DataModel).Property.Method, value...)
+		authDids := append(didDocument[key].(DataModel).Property.Auth, key)
+		didDocument[key].(DataModel).Property.Method = p
+		didDocument[key].(DataModel).Property.Auth = authDids
+		//p := *dm.Property
+		//printJson(p)
+		//didDocument[key].(DataModel).Property.Method = value
+		//dataModel.Property = Properties{[]string{}, "", []VerMethod{{"", "", "", ""}}, []string{}}
+		//property := dataModel.Property
+		//verMethods := property.Method
+		//verMethods = append(verMethods, value...)
+
+		//keys = append(keys, key)
+	}
+}
 func createDidDocument(id string, didMethod string, implementation string, implementer string, supportedContentTypes []string, datamodels map[string]DataModel) DidDoc {
 	/* Requires: dids is a list of n strings (1 for each did)
 	datamodels is a dict having 1 key for each element of dids
@@ -121,7 +148,7 @@ func createDidDocument(id string, didMethod string, implementation string, imple
 func createDataModel(property Properties) DataModel {
 
 	datamodel := DataModel{
-		Property: property,
+		Property: &property,
 	}
 
 	return datamodel
