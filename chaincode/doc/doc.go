@@ -26,6 +26,7 @@ type DataModel struct {
 
 type DidDoc map[string]interface{}
 
+// Model
 func (didDocument DidDoc) AddDataModel(datamodels map[string]DataModel) {
 	//var keys []string
 
@@ -48,10 +49,8 @@ func (didDocument DidDoc) AddAuthMethod(methods map[string][]VerMethod) {
 
 	}
 }
-func CreateDidDocument(id string, didMethod string, implementation string, implementer string, supportedContentTypes []string, datamodels map[string]DataModel) DidDoc {
-	/* Requires: dids is a list of n strings (1 for each did)
-	datamodels is a dict having 1 key for each element of dids
-	*/
+func CreateDidDocument(id string, didMethod string, implementation string, implementer string, supportedContentTypes []string, did string, dataModel DataModel) DidDoc {
+
 	didDocument := make(DidDoc)
 	didDocument["id"] = id
 	didDocument["didMethod"] = didMethod
@@ -59,13 +58,11 @@ func CreateDidDocument(id string, didMethod string, implementation string, imple
 	didDocument["implementater"] = implementer
 	didDocument["supportedContentTypes"] = supportedContentTypes
 	// Getting keys from datamodels
-	var keys []string
+	//var keys []string
 
-	for key, value := range datamodels {
-		keys = append(keys, key)
-		didDocument[key] = value
-	}
-	didDocument["dids"] = keys
+	didDocument[did] = dataModel
+
+	didDocument["dids"] = []string{did}
 
 	return didDocument
 
@@ -100,6 +97,11 @@ func CreateVerMethod(id string, typ string, controller string, publicKeyMB strin
 
 	return verMethod
 }
+
+// Controller
+//func Create() {
+
+//}
 
 func PrintJson(doc any) {
 	a1_json, err := json.Marshal(doc)

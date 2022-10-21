@@ -50,7 +50,7 @@ func main() {
 	didMap["did:orcl:QC5S8KGCFN37Z5VP"] = dm
 
 	didDoc := doc.CreateDidDocument(s, "did:orcl", "DID Oracle Test Suite", "Oracle", []string{"application/did+json",
-		"application/did+ld+json"}, didMap)
+		"application/did+ld+json"}, s, dm)
 	//printJson(verMeth)
 	//printJson(prop)
 	//printJson(didDoc)
