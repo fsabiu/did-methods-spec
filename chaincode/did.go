@@ -1,6 +1,10 @@
 package main
 
-import "github.com/fsabiu/did-methods-spec/chaincode/doc"
+import (
+	"fmt"
+
+	"github.com/fsabiu/did-methods-spec/chaincode/doc"
+)
 
 func main() {
 
@@ -49,14 +53,16 @@ func main() {
 	didMap := make(map[string]doc.DataModel)
 	didMap["did:orcl:QC5S8KGCFN37Z5VP"] = dm
 
-	publicKey := "cTx0CiPUqsTLr2xy53VAQUVfOn7dvFqHeeC1k"
-	didDoc := doc.CreateDidDocument(s, "did:orcl", "DID Oracle Test Suite", "Oracle", []string{"application/did+json",
-		"application/did+ld+json"}, publicKey)
+	publicKey := "cTx0CiPUqsTLr2xy53VAQUVfOn7dvFqXXXXXX"
+	mydid := doc.Create(publicKey)
+
+	fmt.Println(mydid)
+
 	//printJson(verMeth)
 	//printJson(prop)
 	//printJson(didDoc)
 
-	dataModel2Add := make(map[string]doc.DataModel)
+	/* dataModel2Add := make(map[string]doc.DataModel)
 	dataModel2Add["did:orcl:XXXXXXXXXXX"] = dm
 
 	didDoc.AddDataModel(dataModel2Add)
@@ -66,6 +72,6 @@ func main() {
 	testMap := make(map[string][]doc.VerMethod)
 	testMap["did:orcl:XXXXXXXXXXX"] = prop.Method
 	didDoc.AddAuthMethod(testMap)
-	doc.PrintJson(didDoc)
+	doc.PrintJson(didDoc) */
 
 }

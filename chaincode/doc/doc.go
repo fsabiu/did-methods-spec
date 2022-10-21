@@ -3,6 +3,9 @@ package doc
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go/chaincode"
 )
 
 // Structures definition
@@ -25,6 +28,10 @@ type DataModel struct {
 }
 
 type DidDoc map[string]interface{}
+
+type SmartContract struct {
+	contractapi.Contract
+}
 
 // Model
 func (didDocument DidDoc) AddDataModel(datamodels map[string]DataModel) {
@@ -50,7 +57,11 @@ func (didDocument DidDoc) AddAuthMethod(methods map[string][]VerMethod) {
 	}
 }
 
-func CreateDidDocument(did string, didMethod string, implementation string, implementer string, supportedContentTypes []string, publicKey string) DidDoc {
+func CreateDidDocument(didMethod string, implementation string, implementer string, supportedContentTypes []string, publicKey string) DidDoc {
+
+	// Generate idstring
+	// Generation did
+	did := "did:orcl:123"
 
 	didDocument := make(DidDoc)
 	didDocument["id"] = did
@@ -65,12 +76,11 @@ func CreateDidDocument(did string, didMethod string, implementation string, impl
 
 	contexts := []string{"https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/ed25519-2020/v1"}
 
-	prop := CreateProperty(contexts, did+"#key-1", []VerMethod{verMeth}, []string{did})
+	prop := CreateProperty(contexts, did, []VerMethod{verMeth}, []string{did})
 
 	dm := CreateDataModel(prop)
 
 	didDocument[did] = dm
-
 	didDocument["dids"] = []string{did}
 
 	return didDocument
@@ -107,13 +117,29 @@ func CreateVerMethod(id string, typ string, controller string, publicKeyMB strin
 	return verMethod
 }
 
-// Controller
-/* func Create(publicKey string) {
+// Controller // API
+func Create(publicKey string) string {
 
-	// call to get idstring
+	/* // call to get idstring
 	idstring := "QC5S8KGCFN37Z5VP"
+	did := "did:orcl:" + idstring */
 
-} */
+	didDocument := CreateDidDocument("did:orcl", "DID Oracle Test Suite", "Oracle", []string{"application/did+json",
+		"application/did+ld+json"}, publicKey)
+
+	fmt.Println(didDocument)
+	// Marshalling
+	marshDoc, err := json.Marshal(didDocument)
+
+	ctx := chaincode.SmartContract{}
+
+	// Error handling
+	if err == nil {
+		err = ctx.GetStub().PutState(didDocument["id"], marshDoc)
+	}
+
+	return didDocument["id"].(string)
+}
 
 func PrintJson(doc any) {
 	a1_json, err := json.Marshal(doc)
