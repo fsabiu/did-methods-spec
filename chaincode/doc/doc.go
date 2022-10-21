@@ -49,18 +49,27 @@ func (didDocument DidDoc) AddAuthMethod(methods map[string][]VerMethod) {
 
 	}
 }
-func CreateDidDocument(id string, didMethod string, implementation string, implementer string, supportedContentTypes []string, did string, dataModel DataModel) DidDoc {
+
+func CreateDidDocument(did string, didMethod string, implementation string, implementer string, supportedContentTypes []string, publicKey string) DidDoc {
 
 	didDocument := make(DidDoc)
-	didDocument["id"] = id
+	didDocument["id"] = did
 	didDocument["didMethod"] = didMethod
 	didDocument["implementation"] = implementation
-	didDocument["implementater"] = implementer
+	didDocument["implementer"] = implementer
 	didDocument["supportedContentTypes"] = supportedContentTypes
 	// Getting keys from datamodels
 	//var keys []string
 
-	didDocument[did] = dataModel
+	verMeth := CreateVerMethod(did+"#key-1", "Ed25519VerificationKey2020", did, publicKey)
+
+	contexts := []string{"https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/ed25519-2020/v1"}
+
+	prop := CreateProperty(contexts, did+"#key-1", []VerMethod{verMeth}, []string{did})
+
+	dm := CreateDataModel(prop)
+
+	didDocument[did] = dm
 
 	didDocument["dids"] = []string{did}
 
@@ -99,9 +108,12 @@ func CreateVerMethod(id string, typ string, controller string, publicKeyMB strin
 }
 
 // Controller
-//func Create() {
+/* func Create(publicKey string) {
 
-//}
+	// call to get idstring
+	idstring := "QC5S8KGCFN37Z5VP"
+
+} */
 
 func PrintJson(doc any) {
 	a1_json, err := json.Marshal(doc)

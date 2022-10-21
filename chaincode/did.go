@@ -49,8 +49,9 @@ func main() {
 	didMap := make(map[string]doc.DataModel)
 	didMap["did:orcl:QC5S8KGCFN37Z5VP"] = dm
 
+	publicKey := "cTx0CiPUqsTLr2xy53VAQUVfOn7dvFqHeeC1k"
 	didDoc := doc.CreateDidDocument(s, "did:orcl", "DID Oracle Test Suite", "Oracle", []string{"application/did+json",
-		"application/did+ld+json"}, s, dm)
+		"application/did+ld+json"}, publicKey)
 	//printJson(verMeth)
 	//printJson(prop)
 	//printJson(didDoc)
