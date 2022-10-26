@@ -110,7 +110,7 @@ return idstring
 ```
 
 ****Method 2**** <br />
-Similarly, Method 2 also exploits the TxIDs to generate the idstrings.
+imilarly, Method 2 exploits the TxIDs to generate the idstrings.
 The main difference with respect to the previous one resides in the conversion of the TxID blocks into base32 characters. In facts, after splitting the TxID into 16 blocks of 4 characters each, the algorithm transforms each block into a vector `v` of length 4, whose elements are the ASCII representation of its characters.
 Then, the checksum of the block's characters is used as a seed for the pseudo-random generation of an odd-integer array `a`. Finally, according to the Hashing Vector technique, the dot product between the vectors `v` and `a` is computed, and its congruent modulo 32 represents the base32 index of the character obteined from the block. <br />
 These steps are iterated over the 16 blocks to obtain the 16 characters of the idstring.
