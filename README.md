@@ -3,10 +3,11 @@
 **About**
 <br/>
 The Oracle DID method specification conforms to the requirements specified in the [DID Specification v1.0](https://www.w3.org/TR/did-core/) published by the [W3C Credentials Community Group](https://www.w3.org/community/credentials/).
+This document specifies a DID syntax, a common data model, core properties, serialized representations, DID operations, and an explanation of the process of resolving DIDs to the resources that they represent.
 
 **Abstract**
 <br/>
-TODO
+Decentralized identifiers (DIDs) are a new type of identifier that enables verifiable, decentralized digital identity. A DID refers to any subject (e.g., a person, organization, thing, data model, abstract entity, etc.) as determined by the controller of the DID.
 
 **Status of This Document**
 <br/>
