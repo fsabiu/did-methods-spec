@@ -2,7 +2,7 @@
 
 **About**
 <br/>
-The Oracle DID method specification conforms to the requirements specified in the DID Specification v1.0 published by the W3C Credentials Community Group.
+The Oracle DID method specification conforms to the requirements specified in the [DID Specification v1.0](https://www.w3.org/TR/did-core/) published by the W3C Credentials Community Group.
 
 **Abstract**
 <br/>
